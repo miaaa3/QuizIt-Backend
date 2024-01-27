@@ -1,0 +1,30 @@
+package com.estsb.QuizIT.Entity;
+
+public enum Category {
+    PHP,
+    CODE,
+    LINUX,
+    CMS,
+    DOCKER,
+    HTML,
+    RUBY,
+    SQL,
+    WORDPRESS,
+    BASH,
+    DEVOPS,
+    KUBERNETES,
+    PROGRAMMING,
+    AI,
+    ANGULAR,
+    BLOCKCHAIN,
+    CLOUDCOMPUTING,
+    DATASCIENCE,
+    GIT,
+    IOS,
+    JAVA,
+    JAVASCRIPT,
+    SECURITY,
+    SWIFT,
+    TYPESCRIPT,
+    UX_UI
+}
