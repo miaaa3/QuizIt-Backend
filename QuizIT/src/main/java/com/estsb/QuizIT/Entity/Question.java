@@ -30,7 +30,7 @@ public class Question {
     @MapKeyColumn(name = "answer_option")
     @Column(name = "answer")
     private Map<String, String> answers;
-
+    
     private boolean multipleCorrectAnswers;
 
     @ElementCollection

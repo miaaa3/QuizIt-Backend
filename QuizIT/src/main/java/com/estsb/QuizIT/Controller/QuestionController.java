@@ -34,8 +34,12 @@ public class QuestionController {
 
             if (optionalQuestion.isPresent()) {
                 Question question = optionalQuestion.get();
-                boolean isCorrect = questionService.checkUserAnswer(question, userAnswerRequest.());
-                return ResponseEntity.ok(new CheckAnswerResponse(isCorrect, question.getCorrectAnswers()));
+                boolean isCorrect = questionService.checkUserAnswer(question, userAnswerRequest.getUserAnswer());
+
+                // Decide whether to pass the entire Map or a specific value
+                Object correctAnswers = question.getCorrectAnswers(); // or question.getCorrectAnswers().get("yourSpecificKey");
+
+                return ResponseEntity.ok(new CheckAnswerResponse(isCorrect, correctAnswers, "Answer checked successfully."));
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -44,6 +48,7 @@ public class QuestionController {
                     .body(new CheckAnswerResponse(false, null, "Error checking answer."));
         }
     }
+
 
     // Get all questions
     @GetMapping
