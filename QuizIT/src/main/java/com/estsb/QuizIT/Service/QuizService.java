@@ -44,7 +44,10 @@ public class QuizService {
     public List<Quiz> getQuizzesByCategoryAndDifficulty(Category category, Difficulty difficulty) {
         return quizRepository.findByCategoryAndDifficulty(category, difficulty);
     }
-
+    public Optional<Quiz> getLastId() {
+        List<Quiz> quizzes = quizRepository.findAll();
+        return quizzes.isEmpty() ? Optional.empty() : Optional.of(quizzes.get(quizzes.size() - 1));
+    }
     public Quiz updateQuiz(Long quizId, Quiz updatedQuiz) {
         if (quizRepository.existsById(quizId)) {
             updatedQuiz.setQuizId(quizId);
