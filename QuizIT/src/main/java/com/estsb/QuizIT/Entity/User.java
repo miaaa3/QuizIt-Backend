@@ -1,5 +1,6 @@
 package com.estsb.QuizIT.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,8 @@ public class User implements UserDetails {
     @Column(unique = true , nullable = false)
     private String username;
 
+    private String name;
+
     @Column( nullable = false)
     private String password;
 
@@ -39,10 +42,12 @@ public class User implements UserDetails {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "user-quiz")
     private List<Quiz> createdQuizzes;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "user-flashcard")
     private List<FlashcardSet> createdFlashcardSet;
@@ -50,6 +55,7 @@ public class User implements UserDetails {
     public User(String email, String username, String password, String role) {
         this.email = email;
         this.username = username;
+        this.name=username;
         try {
             this.role = Role.valueOf(role);
         } catch (IllegalArgumentException e) {

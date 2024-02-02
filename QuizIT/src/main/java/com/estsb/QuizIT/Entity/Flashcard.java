@@ -1,5 +1,6 @@
 package com.estsb.QuizIT.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,5 +25,6 @@ public class Flashcard {
 
     @ManyToOne
     @JoinColumn(name = "flashcard_set_id")
+    @JsonBackReference(value = "flashcard-cards")
     private FlashcardSet flashcardSet;
 }

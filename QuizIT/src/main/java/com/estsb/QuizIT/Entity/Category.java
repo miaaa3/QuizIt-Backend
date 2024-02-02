@@ -26,5 +26,5 @@ public enum Category {
     SECURITY,
     SWIFT,
     TYPESCRIPT,
-    UX_UI
+    UXUI
 }

@@ -1,5 +1,7 @@
 package com.estsb.QuizIT.Service;
 
+import com.estsb.QuizIT.Entity.Category;
+import com.estsb.QuizIT.Entity.Difficulty;
 import com.estsb.QuizIT.Entity.FlashcardSet;
 import com.estsb.QuizIT.Repository.FlashcardSetRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,18 @@ public class FlashcardSetService {
 
     public List<FlashcardSet> getAllFlashcardSets() {
         return flashcardSetRepository.findAll();
+    }
+
+    public List<FlashcardSet> getFlashcardSetsByCategory(Category category) {
+        return flashcardSetRepository.findByCategory(category);
+    }
+
+    public List<FlashcardSet> getFlashcardSetsByDifficulty(Difficulty difficulty) {
+        return flashcardSetRepository.findByDifficulty(difficulty);
+    }
+
+    public List<FlashcardSet> getFlashcardSetsByCategoryAndDifficulty(Category category, Difficulty difficulty) {
+        return flashcardSetRepository.findByCategoryAndDifficulty(category, difficulty);
     }
 
     public Optional<FlashcardSet> getFlashcardSetById(Long id) {

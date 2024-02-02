@@ -1,5 +1,7 @@
 package com.estsb.QuizIT.Controller;
 
+import com.estsb.QuizIT.Entity.Category;
+import com.estsb.QuizIT.Entity.Difficulty;
 import com.estsb.QuizIT.Entity.FlashcardSet;
 import com.estsb.QuizIT.Entity.User;
 import com.estsb.QuizIT.Repository.UserRepository;
@@ -50,6 +52,28 @@ public class FlashcardSetController {
         // Create the flashcardSet
         FlashcardSet createdFlashcardSet = flashcardSetService.createFlashcardSet(flashcardSet);
         return new ResponseEntity<>(createdFlashcardSet, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/by-category/{category}")
+    public List<FlashcardSet> getFlashcardSetsByCategory(@PathVariable String category) {
+        Category enumCategory = normalizeCategory(category);
+        return flashcardSetService.getFlashcardSetsByCategory(enumCategory);
+    }
+
+    private Category normalizeCategory(String category) {
+        // Normalize the category by converting to uppercase and removing spaces
+        return Category.valueOf(category.toUpperCase().replaceAll("\\s", ""));
+    }
+    @GetMapping("/by-difficulty/{difficulty}")
+    public List<FlashcardSet> getFlashcardSetsByDifficulty(@PathVariable Difficulty difficulty) {
+        return flashcardSetService.getFlashcardSetsByDifficulty(difficulty);
+    }
+
+    @GetMapping("/by-category-and-difficulty/{category}/{difficulty}")
+    public List<FlashcardSet> getFlashcardSetsByCategoryAndDifficulty(
+            @PathVariable Category category,
+            @PathVariable Difficulty difficulty) {
+        return flashcardSetService.getFlashcardSetsByCategoryAndDifficulty(category, difficulty);
     }
 
     @PutMapping("/{id}/update")

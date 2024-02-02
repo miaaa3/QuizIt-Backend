@@ -1,6 +1,7 @@
 package com.estsb.QuizIT.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,8 @@ public class FlashcardSet {
     @Column(nullable = false)
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "flashcardSet")
+    @JsonManagedReference(value = "flashcard-cards")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "flashcardSet" )
     private List<Flashcard> flashcards;
 
     @ManyToOne
