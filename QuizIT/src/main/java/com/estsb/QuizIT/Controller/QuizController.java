@@ -92,6 +92,17 @@ public class QuizController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/last")
+    public ResponseEntity<Quiz> getLastId() {
+        List<Quiz> quizzes = quizService.getAllQuizzes();
+
+        if (!quizzes.isEmpty()) {
+            Quiz lastQuiz = quizzes.get(quizzes.size() - 1);
+            return new ResponseEntity<>(lastQuiz, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
     private Category normalizeCategory(String category) {
         // Normalize the category by converting to uppercase and removing spaces
