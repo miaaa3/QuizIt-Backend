@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -37,4 +38,7 @@ public class Quiz {
     @JoinColumn(name = "created_by")
     @JsonBackReference(value = "user-quiz")
     private User createdBy;
+
+    @Column(nullable = false)
+    private Boolean isPublic = true;
 }

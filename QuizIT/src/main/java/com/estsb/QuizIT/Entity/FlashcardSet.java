@@ -42,4 +42,13 @@ public class FlashcardSet {
     @JoinColumn(name = "user_id")
     @JsonBackReference(value = "user-flashcard")
     private User createdBy;
+
+    @OneToMany(mappedBy = "flashcardSet")
+    @JsonBackReference(value = "flashcard-set-games")
+    private List<Game> games;
+
+    @Column(nullable = false)
+    private Boolean isPublic = true;
+
+
 }

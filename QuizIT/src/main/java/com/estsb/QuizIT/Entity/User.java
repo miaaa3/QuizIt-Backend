@@ -1,5 +1,6 @@
 package com.estsb.QuizIT.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -51,6 +52,14 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "user-flashcard")
     private List<FlashcardSet> createdFlashcardSet;
+
+    @ManyToMany(mappedBy = "players")
+    @JsonIgnore// This is the relationship with the Game entity
+    private List<Game> games;
+
+    @JsonManagedReference(value = "user-games")
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
+    private List<Game> createdGames;
 
     public User(String email, String username, String password, String role) {
         this.email = email;

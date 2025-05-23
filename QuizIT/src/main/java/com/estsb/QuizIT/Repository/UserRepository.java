@@ -15,5 +15,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @Override
     Page<User> findAll(Pageable pageable);
 
+    Optional<User> findById(Long id);
+
     Optional<User> findByUsername(String username);
 }
