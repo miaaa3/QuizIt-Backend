@@ -24,12 +24,6 @@ public class Quiz {
 
     private String quizName;
 
-    @Enumerated(EnumType.STRING)
-    private Category category;
-
-    @Enumerated(EnumType.STRING)
-    private Difficulty difficulty;
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "quiz")
     @JsonManagedReference(value = "quiz-questions")
     private List<Question> questions;
@@ -41,4 +35,7 @@ public class Quiz {
 
     @Column(nullable = false)
     private Boolean isPublic = true;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+
 }

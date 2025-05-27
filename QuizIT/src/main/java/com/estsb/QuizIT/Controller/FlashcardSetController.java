@@ -1,8 +1,7 @@
 package com.estsb.QuizIT.Controller;
 
-import com.estsb.QuizIT.Entity.Category;
-import com.estsb.QuizIT.Entity.Difficulty;
 import com.estsb.QuizIT.Entity.FlashcardSet;
+import com.estsb.QuizIT.Entity.Quiz;
 import com.estsb.QuizIT.Entity.User;
 import com.estsb.QuizIT.Repository.UserRepository;
 import com.estsb.QuizIT.Service.FlashcardSetService;
@@ -54,28 +53,6 @@ public class FlashcardSetController {
         return new ResponseEntity<>(createdFlashcardSet, HttpStatus.CREATED);
     }
 
-    @GetMapping("/by-category/{category}")
-    public List<FlashcardSet> getFlashcardSetsByCategory(@PathVariable String category) {
-        Category enumCategory = normalizeCategory(category);
-        return flashcardSetService.getFlashcardSetsByCategory(enumCategory);
-    }
-
-    private Category normalizeCategory(String category) {
-        // Normalize the category by converting to uppercase and removing spaces
-        return Category.valueOf(category.toUpperCase().replaceAll("\\s", ""));
-    }
-    @GetMapping("/by-difficulty/{difficulty}")
-    public List<FlashcardSet> getFlashcardSetsByDifficulty(@PathVariable Difficulty difficulty) {
-        return flashcardSetService.getFlashcardSetsByDifficulty(difficulty);
-    }
-
-    @GetMapping("/by-category-and-difficulty/{category}/{difficulty}")
-    public List<FlashcardSet> getFlashcardSetsByCategoryAndDifficulty(
-            @PathVariable Category category,
-            @PathVariable Difficulty difficulty) {
-        return flashcardSetService.getFlashcardSetsByCategoryAndDifficulty(category, difficulty);
-    }
-
     @PutMapping("/{id}/update")
     public ResponseEntity<FlashcardSet> updateFlashcardSet(@PathVariable Long id, @RequestBody FlashcardSet updatedFlashcardSet) {
         FlashcardSet flashcardSet = flashcardSetService.updateFlashcardSet(id, updatedFlashcardSet);
@@ -91,5 +68,34 @@ public class FlashcardSetController {
                 new ResponseEntity<>("FlashcardSet deleted successfully", HttpStatus.OK) :
                 new ResponseEntity<>("FlashcardSet not found", HttpStatus.NOT_FOUND);
     }
+
+    // Set flashcardSet visibility (public/private)
+    @PutMapping("/{id}/visibility")
+    public ResponseEntity<FlashcardSet> setFlashcardSetVisibility(@PathVariable Long id, @RequestParam boolean isPublic) {
+        FlashcardSet flashcardSet = flashcardSetService.setFlashcardSetVisibility(id, isPublic);
+        return (flashcardSet != null) ?
+                new ResponseEntity<>(flashcardSet, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<FlashcardSet>> searchFlashcardSets(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) Boolean isPublic,
+            Principal principal) {
+
+        User user = null;
+        if (principal != null) {
+            Optional<User> userOpt = userRepository.findByEmail(principal.getName());
+            if (userOpt.isPresent()) {
+                user = userOpt.get();
+            }
+        }
+
+        List<FlashcardSet> results = flashcardSetService.searchFlashcardSets(name, description, isPublic, user);
+        return new ResponseEntity<>(results, HttpStatus.OK);
+    }
+
 
 }

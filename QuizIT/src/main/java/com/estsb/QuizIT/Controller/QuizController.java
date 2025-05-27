@@ -1,14 +1,10 @@
 package com.estsb.QuizIT.Controller;
 
-import com.estsb.QuizIT.Entity.Category;
-import com.estsb.QuizIT.Entity.Difficulty;
 import com.estsb.QuizIT.Entity.Quiz;
 import com.estsb.QuizIT.Entity.User;
 import com.estsb.QuizIT.Repository.UserRepository;
-import com.estsb.QuizIT.Service.Authentication.AuthenticationService;
 import com.estsb.QuizIT.Service.QuizService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -61,37 +57,7 @@ public class QuizController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/{category}")
-    public ResponseEntity<List<Quiz>> getQuizzesByCategory(@PathVariable String category) {
-        try {
-            // Normalize the category by converting to uppercase and removing spaces
-            Category enumCategory = normalizeCategory(category);
-            List<Quiz> quizzes = quizService.getQuizzesByCategory(enumCategory);
-            return !quizzes.isEmpty() ?
-                    new ResponseEntity<>(quizzes, HttpStatus.OK) :
-                    new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Unavailable quizzes");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-    @GetMapping("/getQuizzesByCategoryAndDifficulty")
-    public ResponseEntity<List<Quiz>> getQuizzesByCategoryAndDifficulty(@RequestParam String category,@RequestParam String difficulty) {
-        try {
-            // Normalize the category by converting to uppercase and removing spaces
-            Category enumCategory = normalizeCategory(category);
-            Difficulty enumDifficulty = Difficulty.valueOf(difficulty.toUpperCase());
 
-            List<Quiz> quizzes = quizService.getQuizzesByCategoryAndDifficulty(enumCategory, enumDifficulty);
-
-            return !quizzes.isEmpty() ?
-                    new ResponseEntity<>(quizzes, HttpStatus.OK) :
-                    new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Unavailable quizzes");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
     @GetMapping("/last")
     public ResponseEntity<Quiz> getLastId() {
         List<Quiz> quizzes = quizService.getAllQuizzes();
@@ -104,10 +70,6 @@ public class QuizController {
         }
     }
 
-    private Category normalizeCategory(String category) {
-        // Normalize the category by converting to uppercase and removing spaces
-        return Category.valueOf(category.toUpperCase().replaceAll("\\s", ""));
-    }
 
     // Update a quiz by ID
     @PutMapping("/{quizId}/update")
@@ -126,4 +88,35 @@ public class QuizController {
                 new ResponseEntity<>("Quiz deleted successfully", HttpStatus.OK) :
                 new ResponseEntity<>("Quiz not found", HttpStatus.NOT_FOUND);
     }
+
+    // Set quiz visibility (public/private)
+    @PutMapping("/{quizId}/visibility")
+    public ResponseEntity<Quiz> setQuizVisibility(@PathVariable Long quizId, @RequestParam boolean isPublic) {
+        Quiz quiz = quizService.setQuizVisibility(quizId, isPublic);
+        return (quiz != null) ?
+                new ResponseEntity<>(quiz, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    // Search quizzes by optional filters: quizName, isPublic, createdBy
+    @GetMapping("/search")
+    public ResponseEntity<List<Quiz>> searchQuizzes(
+            @RequestParam(required = false) String quizName,
+            @RequestParam(required = false) Boolean isPublic,
+            @RequestParam(required = false) Long createdById) {
+
+        User createdBy = null;
+        if (createdById != null) {
+            Optional<User> userOpt = userRepository.findById(createdById);
+            if (userOpt.isPresent()) {
+                createdBy = userOpt.get();
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        List<Quiz> result = quizService.searchQuizzes(quizName, isPublic, createdBy);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }
+

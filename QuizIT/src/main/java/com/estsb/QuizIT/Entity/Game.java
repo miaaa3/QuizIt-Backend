@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -27,14 +28,16 @@ public class Game {
     @JsonBackReference(value = "user-games")
     private User createdBy;
 
+    private LocalDateTime createdAt = LocalDateTime.now();
+
     // Players of the game (ManyToMany)
     @ManyToMany
     @JoinTable(
-            name = "game_users",
+            name = "game_players",
             joinColumns = @JoinColumn(name = "game_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    @JsonIgnore  // Optional: avoid infinite recursion or large JSON payloads
-    private List<User> players;
+            inverseJoinColumns = @JoinColumn(name = "player_id")
+    )
+    private List<Player> players;
 
     // Flashcard set used for this game (ManyToOne)
     @ManyToOne

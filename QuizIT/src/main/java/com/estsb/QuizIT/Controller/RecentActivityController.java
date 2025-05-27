@@ -53,7 +53,6 @@ public class RecentActivityController {
             Long quizId = recentActivityDTO.getEntityId();
             Quiz quiz = quizRepository.findById(quizId).orElse(null);
             recentActivity.setTitle(quiz.getQuizName());
-            recentActivity.setCategory( String.valueOf(quiz.getCategory()));
 
             if (quiz == null) {
                 // Quiz not found
@@ -65,7 +64,6 @@ public class RecentActivityController {
             Long flashcardSetId = recentActivityDTO.getEntityId();
             FlashcardSet flashcardSet = flashcardSetRepository.findById(flashcardSetId).orElse(null);
             recentActivity.setTitle(flashcardSet.getName());
-            recentActivity.setCategory(String.valueOf(flashcardSet.getCategory()));
 
             if (flashcardSet == null) {
                 // FlashcardSet not found

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -25,12 +26,6 @@ public class FlashcardSet {
     @Column(nullable = false)
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private Category category;
-
-    @Enumerated(EnumType.STRING)
-    private Difficulty difficulty;
-
     @Column(nullable = false)
     private String description;
 
@@ -42,6 +37,8 @@ public class FlashcardSet {
     @JoinColumn(name = "user_id")
     @JsonBackReference(value = "user-flashcard")
     private User createdBy;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "flashcardSet")
     @JsonBackReference(value = "flashcard-set-games")

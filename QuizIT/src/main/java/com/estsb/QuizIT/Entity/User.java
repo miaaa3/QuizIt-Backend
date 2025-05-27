@@ -53,9 +53,6 @@ public class User implements UserDetails {
     @JsonManagedReference(value = "user-flashcard")
     private List<FlashcardSet> createdFlashcardSet;
 
-    @ManyToMany(mappedBy = "players")
-    @JsonIgnore// This is the relationship with the Game entity
-    private List<Game> games;
 
     @JsonManagedReference(value = "user-games")
     @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)

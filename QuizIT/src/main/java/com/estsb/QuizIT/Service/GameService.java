@@ -2,10 +2,7 @@ package com.estsb.QuizIT.Service;
 
 
 import com.estsb.QuizIT.Entity.*;
-import com.estsb.QuizIT.Repository.FlashcardRepository;
-import com.estsb.QuizIT.Repository.FlashcardSetRepository;
-import com.estsb.QuizIT.Repository.GameRepository;
-import com.estsb.QuizIT.Repository.UserRepository;
+import com.estsb.QuizIT.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +19,14 @@ public class GameService {
     private final FlashcardRepository flashcardRepository;
     private final FlashcardSetRepository flashcardSetRepository;
     private final UserRepository userRepository;
+    private final QRCodeService qrCodeService;
+    private final PlayerRepository playerRepository;
+
+    public String generateQRCodeBase64(String content) throws Exception {
+        byte[] qrBytes = qrCodeService.generateQRCodeByteArray(content);
+        return java.util.Base64.getEncoder().encodeToString(qrBytes);
+    }
+
 
     public Game createGame(String questionType, int numberOfQuestions, Long flashcardSetId, Long teacherId) {
         User teacher = userRepository.findById(teacherId)
@@ -31,12 +36,12 @@ public class GameService {
                 .orElseThrow(() -> new IllegalArgumentException("Flashcard set not found"));
 
         Game newGame = new Game();
-        newGame.setPlayers(new ArrayList<>()); // empty list, no players yet
+        newGame.setPlayers(new ArrayList<>());
         newGame.setCreatedBy(teacher);
         newGame.setFlashcardSet(flashcardSet);
         newGame.setQuestionType(QuestionType.valueOf(questionType.toUpperCase()));
         newGame.setNumberOfQuestions(numberOfQuestions);
-        newGame.setIsActive(false); // not started yet
+        newGame.setIsActive(false);
 
         String gameCode = generateGameCode();
         newGame.setGameCode(gameCode);
@@ -45,22 +50,30 @@ public class GameService {
         return newGame;
     }
 
-    public boolean joinGame(String gameCode, Long playerId) {
+    public boolean joinGame(String gameCode, String username) {
         Game game = gameRepository.findByGameCode(gameCode)
                 .orElseThrow(() -> new IllegalArgumentException("Game not found"));
 
-        User player = userRepository.findById(playerId)
-                .orElseThrow(() -> new IllegalArgumentException("Player not found"));
+        Player player = playerRepository.findByUsername(username).orElse(null);
 
-        if (game.getPlayers().stream().anyMatch(u -> u.getId().equals(playerId))) {
-            return false; // already joined
+        if (player == null) {
+            player = new Player();
+            player.setUsername(username);
+            player = playerRepository.save(player);
+        }
+
+        Player finalPlayer = player;
+        boolean alreadyJoined = game.getPlayers().stream()
+                .anyMatch(p -> p.getId().equals(finalPlayer.getId()));
+
+        if (alreadyJoined) {
+            return false;
         }
 
         game.getPlayers().add(player);
         gameRepository.save(game);
         return true;
     }
-
 
 
     // Generate a unique game code
@@ -191,7 +204,7 @@ public class GameService {
     }
 
     // Get players for a specific game
-    public List<User> getPlayersForGame(Long gameId) {
+    public List<Player> getPlayersForGame(Long gameId) {
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Game not found"));
         return game.getPlayers();
     }
