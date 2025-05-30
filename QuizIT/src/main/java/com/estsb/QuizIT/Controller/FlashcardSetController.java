@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -78,8 +79,8 @@ public class FlashcardSetController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<FlashcardSet>> searchFlashcardSets(
+    @GetMapping("/search-separate")
+    public ResponseEntity<Map<String, List<FlashcardSet>>> searchFlashcardSetsSeparate(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) Boolean isPublic,
@@ -88,14 +89,22 @@ public class FlashcardSetController {
         User user = null;
         if (principal != null) {
             Optional<User> userOpt = userRepository.findByEmail(principal.getName());
-            if (userOpt.isPresent()) {
-                user = userOpt.get();
-            }
+            if (userOpt.isPresent()) user = userOpt.get();
         }
 
-        List<FlashcardSet> results = flashcardSetService.searchFlashcardSets(name, description, isPublic, user);
-        return new ResponseEntity<>(results, HttpStatus.OK);
+        Map<String, List<FlashcardSet>> results = flashcardSetService.searchFlashcardSetsSeparate(name, description, isPublic, user);
+        return ResponseEntity.ok(results);
     }
 
 
+    @GetMapping("/visible")
+    public ResponseEntity<Map<String, List<FlashcardSet>>> getVisibleFlashcardSets(Principal principal) {
+        User user = null;
+        if (principal != null) {
+            Optional<User> userOpt = userRepository.findByEmail(principal.getName());
+            if (userOpt.isPresent()) user = userOpt.get();
+        }
+        Map<String, List<FlashcardSet>> result = flashcardSetService.findAllPublicOrOwned(user);
+        return ResponseEntity.ok(result);
+    }
 }

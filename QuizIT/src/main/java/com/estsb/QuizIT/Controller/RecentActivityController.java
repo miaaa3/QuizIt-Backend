@@ -52,7 +52,7 @@ public class RecentActivityController {
         if (recentActivityDTO.getActivityType() == ActivityType.QUIZ) {
             Long quizId = recentActivityDTO.getEntityId();
             Quiz quiz = quizRepository.findById(quizId).orElse(null);
-            recentActivity.setTitle(quiz.getQuizName());
+            recentActivity.setTitle(quiz.getName());
 
             if (quiz == null) {
                 // Quiz not found

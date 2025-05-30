@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -99,24 +100,32 @@ public class QuizController {
     }
 
     // Search quizzes by optional filters: quizName, isPublic, createdBy
-    @GetMapping("/search")
-    public ResponseEntity<List<Quiz>> searchQuizzes(
+    @GetMapping("/search-separate")
+    public ResponseEntity<Map<String, List<Quiz>>> searchQuizzesSeparate(
             @RequestParam(required = false) String quizName,
             @RequestParam(required = false) Boolean isPublic,
-            @RequestParam(required = false) Long createdById) {
+            Principal principal) {
 
-        User createdBy = null;
-        if (createdById != null) {
-            Optional<User> userOpt = userRepository.findById(createdById);
-            if (userOpt.isPresent()) {
-                createdBy = userOpt.get();
-            } else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
+        User user = null;
+        if (principal != null) {
+            Optional<User> userOpt = userRepository.findByEmail(principal.getName());
+            if (userOpt.isPresent()) user = userOpt.get();
         }
 
-        List<Quiz> result = quizService.searchQuizzes(quizName, isPublic, createdBy);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        Map<String, List<Quiz>> results = quizService.searchQuizzesSeparate(quizName, isPublic, user);
+        return ResponseEntity.ok(results);
     }
+
+    @GetMapping("/visible")
+    public ResponseEntity<Map<String, List<Quiz>>>  getVisibleQuizzes(Principal principal) {
+        User user = null;
+        if (principal != null) {
+            Optional<User> userOpt = userRepository.findByEmail(principal.getName());
+            if (userOpt.isPresent()) user = userOpt.get();
+        }
+        Map<String, List<Quiz>> result = quizService.findAllPublicOrOwned(user);
+        return ResponseEntity.ok(result);
+    }
+
 }
 

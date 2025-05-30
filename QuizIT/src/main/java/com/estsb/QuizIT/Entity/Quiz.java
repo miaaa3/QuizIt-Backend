@@ -20,9 +20,11 @@ import java.util.List;
 public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long quizId;
+    private Long id;
 
-    private String quizName;
+    private String name;
+
+    private String description;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "quiz")
     @JsonManagedReference(value = "quiz-questions")
