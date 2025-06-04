@@ -299,7 +299,7 @@ public class GameService {
 
         // Update the player’s score in the game
         game.getPlayerScores().put(playerId, game.getPlayerScores().getOrDefault(playerId, 0) + 1);
-        player.setScore(player.getScore() + 1);
+        player.setScore(player.getScore() + (long)1);
 
         // Save the updated game and player
         gameRepository.save(game);

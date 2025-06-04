@@ -21,7 +21,7 @@ public class Player {
 
     private String avatarUrl;  // This will store the URL of the avatar image
 
-    private Long score;
+    private Long score = 0L;;
     private Boolean finished;
 
 

@@ -21,6 +21,7 @@ public class PlayerController {
     @PostMapping("/create")
     public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
         // Assuming the avatar URL and username are provided in the request
+
         Player savedPlayer = playerRepository.save(player);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPlayer);
     }

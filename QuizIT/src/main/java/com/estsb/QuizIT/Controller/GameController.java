@@ -134,6 +134,13 @@ public class GameController {
         return ResponseEntity.ok(game);
     }
 
+    @GetMapping("/createdBy/{gameCode}")
+    public ResponseEntity<User> getCreatedBy(@PathVariable String gameCode) {
+        Game game = gameService.getGameByCode(gameCode);
+
+        return ResponseEntity.ok(game.getCreatedBy());
+    }
+
     @GetMapping("/players/{gameId}")
     public ResponseEntity<List<Player>> getPlayersForGame(@PathVariable Long gameId) {
         List<Player> players = gameService.getPlayersForGame(gameId);
@@ -154,7 +161,6 @@ public class GameController {
     public ResponseEntity<String> updateScore(
             @PathVariable Long gameId,
             @RequestParam Long playerId) {
-
         try {
             gameService.updateScore(gameId, playerId);
             return ResponseEntity.ok("Player score updated successfully.");
