@@ -21,6 +21,12 @@ public class QuestionService {
         return questionRepository.save(question);
     }
 
+    // Create with image
+    public Question createQuestionWithImage(Question question, byte[] imageBytes) {
+        question.setPicture(imageBytes);
+        return questionRepository.save(question);
+    }
+
     // Read
     public List<Question> getAllQuestions() {
         return questionRepository.findAll();
@@ -28,6 +34,13 @@ public class QuestionService {
 
     public Optional<Question> getQuestionById(Long questionId) {
         return questionRepository.findById(questionId);
+    }
+
+    // Read image bytes separately (optional)
+    public byte[] getQuestionImage(Long questionId) {
+        return questionRepository.findById(questionId)
+                .map(Question::getPicture)
+                .orElse(null);
     }
 
     // Update
@@ -40,12 +53,17 @@ public class QuestionService {
         }
     }
 
-    public boolean checkUserAnswer(Question question, String userAnswer) {
-        // Get the correct answers from the question entity
-        Map<String, Boolean> correctAnswers = question.getCorrectAnswers();
+    // Update image bytes for a question
+    public Question updateQuestionImage(Long questionId, byte[] imageBytes) {
+        return questionRepository.findById(questionId).map(question -> {
+            question.setPicture(imageBytes);
+            return questionRepository.save(question);
+        }).orElse(null);
+    }
 
-        // Check if the user's answer is correct
-        return correctAnswers.containsKey(userAnswer) && correctAnswers.get(userAnswer);
+    public boolean checkUserAnswer(Question question, String userAnswer) {
+        String correctAnswer= question.getCorrectAnswer();
+        return correctAnswer.equalsIgnoreCase(userAnswer);
     }
 
     // Delete

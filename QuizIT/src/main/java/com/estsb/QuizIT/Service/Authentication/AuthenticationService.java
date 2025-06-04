@@ -60,6 +60,7 @@ public class AuthenticationService {
             String jwtAccessToken = jwtService.generateToken(user);
             return ResponseEntity.ok(AuthenticationResponse.builder()
                     .access_token(jwtAccessToken)
+                    .id(user.getId())
                     .email(user.getEmail())
                     .role(user.getRole()).build());
         } catch (NoSuchElementException e) {

@@ -19,6 +19,12 @@ public class Player {
     @Column(unique = true, nullable = false)
     private String username;
 
+    private String avatarUrl;  // This will store the URL of the avatar image
+
+    private Long score;
+    private Boolean finished;
+
+
     @ManyToMany(mappedBy = "players", fetch = FetchType.LAZY)
     @JsonIgnore// This is the relationship with the Game entity
     private List<Game> games;

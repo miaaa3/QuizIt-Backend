@@ -5,12 +5,12 @@ import lombok.Data;
 @Data
 public class CheckAnswerResponse {
     private final boolean correct;
-    private final Object correctAnswers;
+    private final String correctAnswer;
     private final String message;
 
-    public CheckAnswerResponse(boolean correct, Object correctAnswers, String message) {
+    public CheckAnswerResponse(boolean correct, String correctAnswer, String message) {
         this.correct = correct;
-        this.correctAnswers = correctAnswers;
+        this.correctAnswer= correctAnswer;
         this.message = message;
     }
 }

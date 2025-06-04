@@ -35,6 +35,10 @@ public class Quiz {
     @JsonBackReference(value = "user-quiz")
     private User createdBy;
 
+    @OneToMany(mappedBy = "quiz")
+    @JsonBackReference(value = "quiz-games")
+    private List<Game> games;
+
     @Column(nullable = false)
     private Boolean isPublic = true;
 

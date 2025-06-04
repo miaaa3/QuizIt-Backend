@@ -1,7 +1,6 @@
 package com.estsb.QuizIT.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,7 +21,6 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Teacher who created the game (ManyToOne)
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
     @JsonBackReference(value = "user-games")
@@ -30,7 +28,6 @@ public class Game {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Players of the game (ManyToMany)
     @ManyToMany
     @JoinTable(
             name = "game_players",
@@ -39,28 +36,56 @@ public class Game {
     )
     private List<Player> players;
 
-    // Flashcard set used for this game (ManyToOne)
+    // Optional: FlashcardSet used in the game (nullable)
     @ManyToOne
-    @JoinColumn(name = "flashcard_set_id")
-    @JsonBackReference(value = "flashcard-set-games") // If FlashcardSet has matching JsonManagedReference
+    @JoinColumn(name = "flashcard_set_id", nullable = true)
+    @JsonBackReference(value = "flashcard-set-games")
     private FlashcardSet flashcardSet;
 
-    @Enumerated(EnumType.STRING)
-    private QuestionType questionType; // TERM, DEFINITION, RANDOM
+    // Optional: Quiz used in the game (nullable)
+    @ManyToOne
+    @JoinColumn(name = "quiz_id", nullable = true)
+    @JsonBackReference(value = "quiz-games")
+    private Quiz quiz;
 
-    private Boolean isActive = true;  // To track if the game is still running
-    private String gameCode; // Generated code to be used in the QR code
+    @Enumerated(EnumType.STRING)
+    private QuestionType questionType; // TERM, DEFINITION, RANDOM (adapt as needed)
+
+    private Boolean isActive = true;
+
+    private String gameCode;
 
     @ElementCollection
     @MapKeyColumn(name = "player_id")
     @Column(name = "score")
-    private Map<Long, Integer> playerScores; // Map to track each player's score
+    private Map<Long, Integer> playerScores;
 
     @ElementCollection
     @MapKeyColumn(name = "player_id")
     @Column(name = "finish_time")
     private Map<Long, Long> playerFinishTimes;
 
+    @ElementCollection
+    @MapKeyColumn(name = "player_id")
+    @Column(name = "question_ids")
+    private Map<Long, List<Long>> playerQuestionIds;
+
+    @ElementCollection
+    @MapKeyColumn(name = "player_id")
+    @Column(name = "current_question_index")
+    private Map<Long, Integer> playerCurrentQuestionIndex;
+
+
     @Column(nullable = false)
-    private int numberOfQuestions; // Number of questions for the game
+    private int numberOfQuestions;
+
+    // Add a helper method to check if the game is flashcard or quiz based
+    public boolean isFlashcardGame() {
+        return flashcardSet != null;
+    }
+
+    public boolean isQuizGame() {
+        return quiz != null;
+    }
+
 }

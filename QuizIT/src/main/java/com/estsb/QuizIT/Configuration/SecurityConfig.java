@@ -26,7 +26,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement((sessionAuthenticationStrategy -> sessionAuthenticationStrategy.sessionCreationPolicy(SessionCreationPolicy.STATELESS)));
         http.authorizeRequests().requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-                .requestMatchers("/api/authentication/**").permitAll()
+                .requestMatchers("/api/authentication/**", "/api/game/**").permitAll()
                 .requestMatchers("/api/**").hasAnyAuthority("USER","ADMIN")
                 .and()
                 .csrf(AbstractHttpConfigurer::disable)
